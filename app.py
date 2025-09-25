@@ -25,9 +25,6 @@ def _bst_to_dict(nodo):
         "right": _bst_to_dict(nodo.getHijoDerecho()),
     }
 
-# ----------------------------------
-# Rutas
-# ----------------------------------
 @app.route("/")
 def index():
     info_arbol = {
