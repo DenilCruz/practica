@@ -17,7 +17,7 @@
         </header>
         
         <main>
-            <!-- Mensajes Flash -->
+
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     <div class="messages">
@@ -36,19 +36,19 @@
                     <div class="operation-forms">
                         <form method="POST" action="/insertar" class="operation-form">
                             <h3>Insertar en Árbol Binario</h3>
-                            <input type="number" name="valor" placeholder="Ingrese un número a insertar" required>
+                            <input type="number" name="valor" placeholder="Ingrese un número" required>
                             <button type="submit">Insertar en BST</button>
                         </form>
 
                         <form method="POST" action="/insertar_avl" class="operation-form avl-form">
                             <h3>Insertar en Árbol AVL</h3>
-                            <input type="number" name="valor" placeholder="Ingrese un número a insertar" required>
+                            <input type="number" name="valor" placeholder="Ingrese un número" required>
                             <button type="submit" class="btn-avl">Insertar en AVL</button>
                         </form>
 
                         <form method="POST" action="/insertar_mvias" class="operation-form mvias-form">
                             <h3>Insertar en Árbol M-vías</h3>
-                            <input type="number" name="valor" placeholder="Ingrese un número a insertar" required>
+                            <input type="number" name="valor" placeholder="Ingrese un número" required>
                             <button type="submit" class="btn-mvias">Insertar en M-vías</button>
                         </form>
 

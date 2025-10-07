@@ -95,7 +95,6 @@ def limpiar_arbol():
     arbol.limpiarArbol()
     arbol_avl.limpiarArbol()
     arbol_mvias.limpiar()
-    flash("Ambos árboles limpiados", "success")
     return redirect(url_for("index"))
 
 @app.route("/api/tree_data")
