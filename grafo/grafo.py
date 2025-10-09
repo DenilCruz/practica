@@ -1,3 +1,4 @@
+
 class ExcepcionAristaNoExiste(Exception):
     pass
 
@@ -6,7 +7,7 @@ class ExcepcionAristaYaExiste(Exception):
 
 
 class Grafo:
-    NRO_DE_VERTICES_INVALIDOS = -1
+    NRO_DE_VERTICE_INVALIDO = -1
 
     def __init__(self, vertices=None):
         self.listaDeVertices = []
@@ -20,7 +21,7 @@ class Grafo:
         for indice, verticeEnTurno in enumerate(self.listaDeVertices):
             if verticeEnTurno == unVertice:
                 return indice
-        return Grafo.NRO_DE_VERTICES_INVALIDOS
+        return Grafo.NRO_DE_VERTICE_INVALIDO
 
     def validarVertice(self, vertice):
         if vertice not in self.listaDeVertices:
@@ -70,7 +71,13 @@ class Grafo:
         #    adyacentes.append(vertice_adyacente)
 
         #return adyacentes
-
+        
+    def getVerticePorIndice(self, indice):
+        if 0 <= indice < len(self.listaDeVertices):
+            return self.listaDeVertices[indice]
+        else:
+            raise IndexError(f"Índice {indice} fuera de rango")
+        
     def __str__(self):
         resultado = "Grafo:\n"
         for i, vertice in enumerate(self.listaDeVertices):
@@ -89,6 +96,7 @@ if __name__ == "__main__":
     grafo.insertarArista(65,2)
     grafo.insertarArista(2,45)
     grafo.insertarArista(23,2)
+    grafo.insertarArista(23,23)
     print(grafo)
     print(grafo.adyacentesDeVertice(23))
     print(grafo.existeArista(2,23))
