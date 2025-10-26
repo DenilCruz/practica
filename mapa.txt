@@ -1,0 +1,131 @@
+import random
+from grafo.grafo import Grafo
+from grafo.dfs import DFS
+
+class MazeGenerator:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.maze = []
+        self.grafo = None
+        
+    def generar_laberinto(self):
+        self.maze = [[1 for _ in range(self.width)] for _ in range(self.height)]
+        
+        self.grafo = self._crear_grafo_celdas()
+        
+        self._generar_con_dfs()
+        self._crear_inicio_y_final()
+        
+        return self.maze
+    
+    def _crear_grafo_celdas(self):
+        grafo = Grafo()
+        
+        for y in range(self.height):
+            for x in range(self.width):
+                grafo.insertarVertice((x, y))
+        
+        for y in range(self.height):
+            for x in range(self.width):
+
+                if x + 1 < self.width:
+                    grafo.insertarArista((x, y), (x + 1, y))
+                    grafo.insertarArista((x + 1, y), (x, y))
+                
+                if y + 1 < self.height:
+                    grafo.insertarArista((x, y), (x, y + 1))
+                    grafo.insertarArista((x, y + 1), (x, y))
+
+        return grafo
+    
+    def _generar_con_dfs(self):
+        inicio_x = random.randint(0, self.width - 1)
+        inicio_y = random.randint(0, self.height - 1)
+        inicio = (inicio_x, inicio_y)
+        
+        self._dfs_laberinto(inicio, set())
+        
+        self._crear_pasillos_adicionales()
+    
+    def _dfs_laberinto(self, celda_actual, visitados):
+        x, y = celda_actual
+        
+        visitados.add(celda_actual)
+        self.maze[y][x] = 0
+        
+        vecinos = self._obtener_vecinos_validos(celda_actual, visitados)
+        
+        random.shuffle(vecinos)
+
+        for vecino in vecinos:
+            if vecino not in visitados:
+                vx, vy = vecino
+                mx = (x + vx) // 2 
+                my = (y + vy) // 2 
+                self.maze[my][mx] = 0 
+                self.maze[vy][vx] = 0
+                visitados.add((mx, my))   
+                
+                self._dfs_laberinto(vecino, visitados)
+    
+    def _obtener_vecinos_validos(self, celda, visitados):
+        """Obtiene los vecinos válidos de una celda"""
+        x, y = celda
+        vecinos = []
+        
+        direcciones = [(0, -2), (0, 2), (-2, 0), (2, 0)]
+        
+        for dx, dy in direcciones:
+            nx, ny = x + dx, y + dy
+            
+            if 0 <= nx < self.width and 0 <= ny < self.height:
+                vecino = (nx, ny)
+                if vecino not in visitados:
+                    vecinos.append(vecino)
+        
+        return vecinos
+    
+    def _crear_pasillos_adicionales(self):
+        for y in range(1, self.height - 1, 2):
+            for x in range(1, self.width - 1, 2):
+                if self.maze[y][x] == 0:  
+                    direcciones = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+                    for dx, dy in direcciones:
+                        nx, ny = x + dx, y + dy
+                        if (0 <= nx < self.width and 0 <= ny < self.height and 
+                            random.random() < 0.2): 
+                            self.maze[ny][nx] = 0
+    
+    def _crear_inicio_y_final(self):
+        pasillos = []
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.maze[y][x] == 0:
+                    pasillos.append((x, y))
+        
+        if len(pasillos) < 2:
+            return 
+        
+
+
+        inicio = random.choice(pasillos)
+        pasillos.remove(inicio)
+        final = random.choice(pasillos)
+        
+        ix, iy = inicio
+        fx, fy = final
+        self.maze[iy][ix] = 3 
+        self.maze[fy][fx] = 4 
+    
+    def obtener_laberinto(self):    
+        return self.maze
+    
+    def imprimir_laberinto(self):
+        for fila in self.maze:
+            print(''.join(['#' if celda == 1 else ' ' for celda in fila]))
+    
+if __name__ == "__main__":
+    generador = MazeGenerator(5, 5)
+    laberinto = generador.generar_laberinto()
+    generador.imprimir_laberinto()

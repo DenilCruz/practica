@@ -9,6 +9,8 @@ class DFS:
         self.recorrido = []
 
     def ejecutar_desde_inicio(self):
+        self.control_marcados.desmarcar_todos_los_vertices()
+        self.recorrido = []
         self.ejecutar_recorrido(self.vertice_de_partida)
         return self.recorrido
       
