@@ -35,7 +35,7 @@ def index():
         "inorden": arbol.inOrden() if not arbol.isVacio() else [],
         "preorden": arbol.preOrden() if not arbol.isVacio() else [],
         "postorden": arbol.posOrden() if not arbol.isVacio() else [],
-        "nivel" : arbol_espejo.encontrarNivelesEspejoConteo()[1] if not arbol.isVacio() else 0,
+        "nivel" : arbol.encontrarNivelesEspejoConteo() if not arbol.isVacio() else 0,
     }
     
     info_avl = {
