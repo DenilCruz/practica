@@ -7,6 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'arbolMvias'))
 from ClaseArbolBinario import ArbolBinario
 from AVL import AVL
 from ArbolMvias import ArbolMVias
+from claseEspejo import Espejo
 
 app = Flask(__name__)
 
@@ -15,6 +16,7 @@ app.secret_key = "Cruz"
 arbol = ArbolBinario()
 arbol_avl = AVL()
 arbol_mvias = ArbolMVias(3)
+arbol_espejo = Espejo()
 
 def _bst_to_dict(nodo):
     if nodo is None:
@@ -33,6 +35,7 @@ def index():
         "inorden": arbol.inOrden() if not arbol.isVacio() else [],
         "preorden": arbol.preOrden() if not arbol.isVacio() else [],
         "postorden": arbol.posOrden() if not arbol.isVacio() else [],
+        "nivel" : arbol_espejo.encontrarNivelesEspejoConteo()[1] if not arbol.isVacio() else 0,
     }
     
     info_avl = {

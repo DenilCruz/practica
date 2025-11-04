@@ -499,21 +499,73 @@ class ArbolBinario:
             resultado += self._estructuraVisualRecursiva(hijo, nuevoPrefijo, esUltimoHijo)
         
         return resultado
+    
+    def encontrarNivelesEspejoConteo(self):
+        if self.isVacio():
+            return {}, 0
+
+        resultados_espejo = {}
+        conteo_niveles_espejo = 0
+        
+        cola = deque([self._raiz])
+        nivel_actual = 0
+
+        while cola:
+            cantidad_nodos_nivel = len(cola)
+            valores_nivel_estructura = [] 
+            valores_nivel_reales = []   
+            proximo_nivel_existe = False 
+
+            for _ in range(cantidad_nodos_nivel):
+                nodo = cola.popleft()
+                
+                if nodo is not None:
+                    valores_nivel_estructura.append(True)
+                    valores_nivel_reales.append(nodo.getValor())
+                    
+                    hijo_izq = nodo.getHijoIzquierdo()
+                    hijo_der = nodo.getHijoDerecho()
+                    
+                    cola.append(hijo_izq)
+                    cola.append(hijo_der)
+                    
+                    if hijo_izq is not None or hijo_der is not None:
+                        proximo_nivel_existe = True
+                else:
+                    valores_nivel_estructura.append(False)
+                    cola.append(None)
+                    cola.append(None)
+
+            if nivel_actual > 0:
+                es_espejo = (valores_nivel_estructura == valores_nivel_estructura[::-1])
+                
+                if es_espejo and any(valores_nivel_estructura):
+                    
+                    resultados_espejo[nivel_actual] = [True]
+
+                    conteo_niveles_espejo += 1
+
+            if not proximo_nivel_existe:
+                break 
+                
+            nivel_actual += 1
+        return resultados_espejo, conteo_niveles_espejo
+
 
     
 
 if __name__ == "__main__":
     arbol1 = ArbolBinario()
-    arbol1.insertarIterativo(45)
-    arbol1.insertarIterativo(23)
-    arbol1.insertarIterativo(65)
-    arbol1.insertarIterativo(2)
-    arbol1.insertarIterativo(38)
-    arbol1.insertarIterativo(52)
-    arbol1.insertarIterativo(96)
-    arbol1.insertarIterativo(7)
-    arbol1.insertarIterativo(48)
+    arbol1.insertarIterativo(100)
+    arbol1.insertarIterativo(90)
+    arbol1.insertarIterativo(80)
+    arbol1.insertarIterativo(85)
+    arbol1.insertarIterativo(110)
+    arbol1.insertarIterativo(120)
+    arbol1.insertarIterativo(115)
 
+    print(arbol1.encontrarNivelesEspejoConteo())
+    print("----------------")
     print("el arbol es vacio? = " , arbol1.isVacio())
     print(arbol1.buscar(99))
     print(arbol1.buscarIterativo(55))    
