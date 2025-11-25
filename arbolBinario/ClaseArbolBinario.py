@@ -550,10 +550,364 @@ class ArbolBinario:
                 
             nivel_actual += 1
         return resultados_espejo, conteo_niveles_espejo
-
-
     
 
+    def amplitud_por_nivel(self):
+        amplitud_por_nivel = {}
+        if self._raiz is None:
+            return amplitud_por_nivel
+        nivel = -1
+
+        cola = [self._raiz]
+        while cola:
+            nivel += 1
+            amplitud_actual = len(cola)
+
+            amplitud_por_nivel[nivel] = amplitud_actual
+            for datos in range(amplitud_actual):
+                nodo = cola.pop(0)
+                if nodo.getHijoIzquierdo() is not None:
+                    cola.append(nodo.getHijoIzquierdo())
+                if nodo.getHijoDerecho() is not None:
+                    cola.append(nodo.getHijoDerecho())
+        return amplitud_por_nivel
+
+    def recorrido_por_nivel(self):
+        diccionario = {}
+        if self._raiz is None:
+            return diccionario
+
+        cola = [self._raiz]
+        nivel = -1
+
+        while cola:
+
+            tam = len(cola)
+            nivel += 1
+            diccionario[nivel] = []
+
+            for datos in range(tam):
+                nodo = cola.pop(0)
+                diccionario[nivel].append(nodo.getValor())
+
+                if nodo.getHijoIzquierdo() is not None:
+                    cola.append(nodo.getHijoIzquierdo())
+                if nodo.getHijoDerecho() is not None:
+                    cola.append(nodo.getHijoDerecho())
+        return diccionario
+    
+
+    def obtener_frontera(self):
+        lista = []
+        self._frontera_mascara(self._raiz, lista)
+        return lista
+    def _frontera_mascara(self, nodo, lista):
+        if nodo is not None:
+            self._frontera_mascara(nodo.getHijoIzquierdo(), lista)
+            if nodo.getHijoIzquierdo() is None and nodo.getHijoDerecho() is None:
+                lista.append(nodo.getValor())
+            self._frontera_mascara(nodo.getHijoDerecho(), lista)
+
+    
+    def sumar_nivel(self, nivel_objetivo):
+        return self._sumar_nivel_mascara(self._raiz, nivel_objetivo, 0)
+
+    def _sumar_nivel_mascara(self, nodo, nivel_objetivo, nivel_actual):
+        if nodo is None:
+            return 0
+
+        if nivel_actual == nivel_objetivo:
+            return nodo.getValor()
+        izq = self._sumar_nivel_mascara(nodo.getHijoIzquierdo(),nivel_objetivo,nivel_actual +1)
+        der = self._sumar_nivel_mascara(nodo.getHijoDerecho(),nivel_objetivo,nivel_actual +1)
+
+        return izq + der
+    
+    
+    def sumar_nivel2(self, nivel_objetivo):
+        suma = 0
+        nivel = 0
+        if self._raiz is None:
+            return suma
+
+
+        cola = [self._raiz]
+        while cola:
+
+            tam = len(cola)
+
+            if nivel > nivel_objetivo:
+                break
+
+            for dato in range(tam):
+
+                nodo = cola.pop(0)
+
+                if nivel == nivel_objetivo:
+                    suma += nodo.getValor()
+
+                if nodo.getHijoDerecho() is not None:
+                    cola.append(nodo.getHijoDerecho())
+                if nodo.getHijoIzquierdo() is not None:
+                    cola.append(nodo.getHijoIzquierdo())
+
+            nivel += 1
+        return suma
+
+
+
+    def ancestro_comun(self, v1 , v2):
+        return self._ancestro_mascara(self._raiz, v1, v2)
+    def _ancestro_mascara(self, nodo, v1, v2):
+        if nodo is None:
+            return None
+
+        if nodo.getValor() < v1 and nodo.getValor() < v2:
+            self._ancestro_mascara(nodo.getHijoDerecho(), v1, v2)
+        if nodo.getValor() > v1 and nodo.getValor() > v2:
+            self._ancestro_mascara(nodo.getHijoIzquierdo(), v1, v2)
+
+        else:
+            return nodo.getValor()
+        
+
+    def espejos_por_nivel(self):
+        diccionario = {}
+        comprobacion = []
+        nivel = 0
+        conteo_espejos = 0
+        if self._raiz is None:
+            diccionario["total"] = 0
+            return diccionario
+        cola = [self._raiz]
+        while cola:
+            tam = len(cola)
+            comprobacion = []
+
+            for datos in range(tam):
+                nodo = cola.pop(0)
+
+                if nodo.getHijoIzquierdo() is not None:
+                    cola.append(nodo.getHijoIzquierdo())
+                    comprobacion.append(True)
+                else:
+                    comprobacion.append(False)
+
+                if nodo.getHijoDerecho() is not None:
+                    cola.append(nodo.getHijoDerecho())
+                    comprobacion.append(True)
+                else:
+                    comprobacion.append(False)
+
+            if not any(comprobacion):
+                break
+
+            es_espejo = (comprobacion == comprobacion[::-1])
+
+            diccionario[nivel + 1] = es_espejo
+
+            if es_espejo:
+                conteo_espejos += 1
+
+            nivel += 1
+
+        diccionario["total"] = conteo_espejos
+        return diccionario
+    
+    def rango(self, valor_min, valor_max):
+        lista = []
+        self._rango_mascara(self._raiz, valor_min, valor_max, lista)
+        return lista
+
+    def _rango_mascara(self, nodo, valor_min, valor_max, lista):
+        if nodo is not None:
+            self._rango_mascara(nodo.getHijoIzquierdo(), valor_min, valor_max, lista)
+            if valor_min <= nodo.getValor() <= valor_max:
+                lista.append(nodo.getValor())
+            self._rango_mascara(nodo.getHijoDerecho(), valor_min, valor_max, lista)
+
+
+    def invertir(self):
+        self._invertir_mascara(self._raiz)
+
+    def _invertir_mascara(self, nodo):
+        if nodo is None:
+            return
+        
+        aux_izq = nodo.getHijoIzquierdo()
+        aux_der = nodo.getHijoDerecho()
+
+        nodo.setHijoIzquierdo(aux_der)
+        nodo.setHijoDerecho(aux_izq)
+
+        self._invertir_mascara(nodo.getHijoIzquierdo())
+        self._invertir_mascara(nodo.getHijoDerecho())
+
+    
+    def es_estricto(self):
+        return self._estricto_mascara(self._raiz)
+
+    def _estricto_mascara(self, nodo):
+        if nodo is None:
+            return True
+        izq = nodo.getHijoIzquierdo()
+        der = nodo.getHijoDerecho()
+
+        if izq is None and der is None:
+            return True
+        if izq is not None and der is not None:
+            return self._estricto_mascara(izq) and self._estricto_mascara(der)
+        return False
+
+    def anchura_maxima(self):
+        diametro = 0
+        if self._raiz is None:
+            return diametro
+        cola = [self._raiz]
+        while cola:
+            tam = len(cola)
+            comprobacion = []
+
+            for datos in range(tam):
+                nodo = cola.pop(0)
+
+                if nodo.getHijoIzquierdo() is not None:
+                    cola.append(nodo.getHijoIzquierdo())
+                    comprobacion.append(True)
+                else:
+                    comprobacion.append(False)
+
+                if nodo.getHijoDerecho() is not None:
+                    cola.append(nodo.getHijoDerecho())
+                    comprobacion.append(True)
+                else:
+                    comprobacion.append(False)
+
+            if len(comprobacion) > diametro:
+                diametro = len(comprobacion)
+
+        return diametro
+    
+    def diametro(self):
+        self.maximo_diametro = 0
+        self._diametro_mascara(self._raiz)
+        return self.maximo_diametro
+
+    def _diametro_mascara(self, nodo):
+        if nodo is None:
+            return 0
+
+        altura_izq = self._diametro_mascara(nodo.getHijoIzquierdo())
+        altura_der = self._diametro_mascara(nodo.getHijoDerecho())
+        diametro_actual = altura_izq + altura_der
+
+        if diametro_actual > self.maximo_diametro:
+            self.maximo_diametro = diametro_actual
+
+        return max(altura_izq, altura_der) + 1
+    
+
+    def obtener_camino_diametro(self):
+        self.camino_maximo = []
+
+        self._camino_diametro_mascara(self._raiz)
+
+        return self.camino_maximo
+
+    def _camino_diametro_mascara(self, nodo):
+        if nodo is None:
+            return []
+
+        camino_izq_abajo = self._camino_diametro_mascara(nodo.getHijoIzquierdo())
+        camino_der_abajo = self._camino_diametro_mascara(nodo.getHijoDerecho())
+
+
+        diametro_actual = camino_izq_abajo[::-1] + [nodo.getValor()] + camino_der_abajo
+        if len(diametro_actual) > len(self.camino_maximo):
+            self.camino_maximo = diametro_actual
+
+
+        if len(camino_izq_abajo) > len(camino_der_abajo):
+            return [nodo.getValor()] + camino_izq_abajo
+        else:
+            return [nodo.getValor()] + camino_der_abajo
+        
+
+    def k_esimo_menor(self, k):
+        aux = [0, None]
+        self._k_esimo_mascara(self._raiz, k, aux)
+        return aux[1]
+
+
+    def _k_esimo_mascara(self, nodo, k, aux):
+        if nodo is None:
+            return aux
+        self._k_esimo_mascara(nodo.getHijoIzquierdo(),k,aux)
+        aux[0] += 1
+        if aux[0] == k:
+            aux[1] = nodo.getValor()
+
+        self._k_esimo_mascara(nodo.getHijoDerecho(),k , aux)
+
+    
+    
+    def obtener_ancestros(self, objetivo):
+        lista = []
+        self._obtener_ancestros_mascara(self._raiz, objetivo, lista)
+        return lista
+    def _obtener_ancestros_mascara(self, nodo, objetivo, lista):
+        if nodo is None:
+            return
+        if objetivo < nodo.getValor():
+            lista.append(nodo.getValor())
+            self._obtener_ancestros_mascara(nodo.getHijoIzquierdo(),objetivo, lista)
+        if objetivo > nodo.getValor():
+            lista.append(nodo.getValor())
+            lista.append(self._obtener_ancestros_mascara(nodo.getHijoDerecho(), objetivo, lista))
+        if objetivo == nodo.getValor():
+            return
+
+
+    def obtener_ancestros2(self, objetivo):
+        lista = []
+        nodo_actual = self._raiz
+        while nodo_actual is not None:
+            valor_actual = nodo_actual.getValor()
+            if objetivo == valor_actual:
+                break
+
+            lista.append(valor_actual)
+
+            if objetivo < valor_actual:
+                nodo_actual = nodo_actual.getHijoIzquierdo()
+            else:
+                nodo_actual = nodo_actual.getHijoDerecho()
+
+        return lista
+    
+    def anchura_maxima_2(self):
+        if self._raiz is None:
+            return 0
+
+        ancho_max = 0
+        cola = [self._raiz]
+
+        while cola:
+            cantidad_en_nivel = len(cola)
+
+            if cantidad_en_nivel > ancho_max:
+                ancho_max = cantidad_en_nivel
+
+            for _ in range(cantidad_en_nivel):
+                nodo = cola.pop(0)
+                if nodo.getHijoIzquierdo():
+                    cola.append(nodo.getHijoIzquierdo())
+                if nodo.getHijoDerecho():
+                    cola.append(nodo.getHijoDerecho())
+
+        return ancho_max
+    
+    
 if __name__ == "__main__":
     arbol1 = ArbolBinario()
     arbol1.insertarIterativo(100)
@@ -564,28 +918,40 @@ if __name__ == "__main__":
     arbol1.insertarIterativo(120)
     arbol1.insertarIterativo(115)
 
-    print(arbol1.encontrarNivelesEspejoConteo())
-    print("----------------")
-    print("el arbol es vacio? = " , arbol1.isVacio())
-    print(arbol1.buscar(99))
-    print(arbol1.buscarIterativo(55))    
-    print("recoridos iterativos")
+    #print(arbol1.encontrarNivelesEspejoConteo())
+    #print("----------------")
+    #print("el arbol es vacio? = " , arbol1.isVacio())
+    #print(arbol1.buscar(99))
+    #print(arbol1.buscarIterativo(55))    
+    #print("recoridos iterativos")
     
-    print(arbol1.inOrden())
-    print(arbol1.posOrden())
-    print(arbol1.preOrden())
+    #print(arbol1.inOrden())
+    #print(arbol1.posOrden())
+    #print(arbol1.preOrden())
     
-    print("recorridos recursivos")
+    #print("recorridos recursivos")
 
-    print(arbol1.inOrdenRecursivo())   
-    print(arbol1.posOrdenRecursivo())
-    print(arbol1.preOrdenRecursivo())
+    #print(arbol1.inOrdenRecursivo())   
+    #print(arbol1.posOrdenRecursivo())
+    #print(arbol1.preOrdenRecursivo())
 
-    print("altura del arbol: ", arbol1.altura())
-    print("altura del arbol (iterativa): ", arbol1.alturaIt())
+    #print("altura del arbol: ", arbol1.altura())
+    #print("altura del arbol (iterativa): ", arbol1.alturaIt())
 
-    print("cantidad de nodos: ", arbol1.cantidadNodos())
-    print("cantidad de nodos (iterativa): ", arbol1.cantidadNodosIt())
+    #print("cantidad de nodos: ", arbol1.cantidadNodos())
+    #print("cantidad de nodos (iterativa): ", arbol1.cantidadNodosIt())
 
-    print("amplitud del arbol: ", arbol1.amplitud())
-    print("recorrido por niveles recursivo: ", arbol1.amplitudRecursivo())
+    #print("amplitud del arbol: ", arbol1.amplitud())
+    #print("recorrido por niveles recursivo: ", arbol1.amplitudRecursivo())
+
+    #print(arbol1.amplitud_por_nivel())
+    #print(arbol1.recorrido_por_nivel())
+    #print(arbol1.obtener_frontera())
+    #print(arbol1.sumar_nivel(2))
+    #print(arbol1.ancestro_comun(85,115))
+    #print(arbol1.obtenerEstructuraVisual())
+    #print(arbol1.rango(85,115))
+    #print(arbol1.invertir())
+    #print(arbol1.obtenerEstructuraVisual())
+    print(arbol1.anchura_maxima_2())
+
